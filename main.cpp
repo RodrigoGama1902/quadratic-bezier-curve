@@ -56,7 +56,9 @@ public:
 
     void draw(sf::RenderWindow &window){
 
-        window.draw(curveVertices);
+        for (const auto& line : shapeLine) {
+            window.draw(line);
+        }
 
         for (const auto& point : curvePoints) {
             sf::CircleShape circle = sf::CircleShape(4);
@@ -73,6 +75,42 @@ public:
 
     }
 
+    std::vector<sf::RectangleShape> generateShapeLine(const std::vector<Point>& points, float thickness) {
+        std::vector<sf::RectangleShape> rectangles;
+
+        if (points.size() < 2) {
+            // Not enough points to form a line
+            return rectangles;
+        }
+
+        sf::Color lineColor = sf::Color::White;  // Change the color as desired
+
+        for (std::size_t i = 1; i < points.size(); ++i) {
+            const Point& p1 = points[i - 1];
+            const Point& p2 = points[i];
+
+            sf::RectangleShape rectangle;
+            rectangle.setPosition(p1.x, p1.y);
+
+            float dx = p2.x - p1.x;
+            float dy = p2.y - p1.y;
+            float length = std::sqrt(dx * dx + dy * dy);
+
+            rectangle.setSize(sf::Vector2f(length, thickness));
+            rectangle.setFillColor(lineColor);
+
+            // Calculate the rotation angle
+            float angle = std::atan2(dy, dx) * 180.0f / static_cast<float>(M_PI);
+            rectangle.setRotation(angle);
+            rectangle.setOrigin(0.0f, thickness / 2.0f);
+
+            rectangles.push_back(rectangle);
+        }
+
+        return rectangles;
+    }
+
+
     void updateCurve(const Point& startPoint, const Point& endPoint, const Point& controlPoint, int numPoints){
 
         start_point = startPoint;
@@ -80,11 +118,8 @@ public:
         control_point = controlPoint;
 
         curvePoints = generateCurve(numPoints);
-        curveVertices = sf::VertexArray(sf::LineStrip);
 
-        for (const auto& point : curvePoints) {
-            curveVertices.append(sf::Vertex(sf::Vector2f(point.x, point.y)));
-        }
+        shapeLine = generateShapeLine(curvePoints, 5);
 
         startCircle.setPosition(start_point.x - 5, start_point.y - 5);
         endCircle.setPosition(end_point.x - 5, end_point.y - 5);
@@ -100,8 +135,8 @@ public:
 private:
     int numPoints;
     
+    std::vector<sf::RectangleShape> shapeLine;
     std::vector<Point> curvePoints;
-    sf::VertexArray curveVertices;
 
 };
 
