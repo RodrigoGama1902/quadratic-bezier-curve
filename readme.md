@@ -2,6 +2,8 @@
 
 This is a C++ project that utilizes the SFML library to create a user-friendly application for manipulating quadratic Bezier curves. The application allows users to interactively control the shape of the curve by dragging control points and adjust the level of detail by scrolling up or down.
 
+![Main](docs/main.gif)
+
 ## Features
 
 - **Quadratic Bezier Curve:** The application focuses on quadratic Bezier curves, which are defined by three control points - a start point, a control point, and an end point. These curves are widely used in computer graphics and animation.
